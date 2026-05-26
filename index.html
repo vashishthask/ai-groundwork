@@ -31,7 +31,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .sdesc{font-size:14px;color:var(--text-sec);margin-bottom:2rem;line-height:1.7;max-width:540px}
 .field{margin-bottom:1.25rem}
 .field label{display:block;font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px}
-.field input[type=text],.field input[type=password],.field input[type=email]{width:100%;padding:11px 14px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);transition:border-color .15s}
+.field input{width:100%;padding:11px 14px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);transition:border-color .15s}
 .field input:focus{outline:none;border-color:var(--text)}
 .field-note{font-size:12px;color:var(--text-ter);margin-top:5px;line-height:1.5}
 .field-note a{color:var(--text-sec)}
@@ -43,7 +43,7 @@ select.sel-input:focus{outline:none;border-color:var(--text)}
 .q-text{font-size:15px;font-weight:500;color:var(--text);margin-bottom:5px;line-height:1.5}
 .q-hint{font-size:12px;color:var(--text-ter);margin-bottom:10px;line-height:1.5;font-style:italic}
 .opts{display:flex;flex-direction:column;gap:6px}
-.opt{text-align:left;padding:10px 14px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-sec);cursor:pointer;line-height:1.5;transition:border-color .1s,color .1s,background .1s}
+.opt{text-align:left;padding:10px 14px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-sec);cursor:pointer;line-height:1.5;transition:border-color .1s,color .1s,background .1s;width:100%}
 .opt:hover{border-color:var(--border);color:var(--text);background:var(--bg)}
 .opt.sel{border-color:var(--text);color:var(--text);background:var(--bg);font-weight:500}
 .multi-note{font-size:11px;color:var(--text-ter);margin-top:5px}
@@ -70,7 +70,7 @@ hr.div{border:none;border-top:0.5px solid var(--border);margin:1.75rem 0}
 .gen-card-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:1rem}
 .provider-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem}
 .provider-btn{padding:10px 8px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-sec);cursor:pointer;text-align:center;transition:border-color .1s,color .1s,background .1s}
-.provider-btn:hover{border-color:var(--border);color:var(--text);background:var(--bg)}
+.provider-btn:hover{color:var(--text);background:var(--bg)}
 .provider-btn.sel{border-color:var(--text);color:var(--text);background:var(--bg);font-weight:500}
 .loading-wrap{padding:3rem 0;display:flex;align-items:center;gap:14px}
 .spinner{width:20px;height:20px;border:1.5px solid var(--border);border-top-color:var(--text-sec);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
@@ -122,108 +122,241 @@ hr.div{border:none;border-top:0.5px solid var(--border);margin:1.75rem 0}
   </header>
   <div id="app"></div>
 </div>
-
 <script>
-const PROVIDERS = {
-  groq: {
-    label: 'Groq',
-    url: 'https://api.groq.com/openai/v1/chat/completions',
-    models: [
-      {id:'llama-3.3-70b-versatile', label:'Llama 3.3 70B (recommended)'},
-      {id:'llama-3.1-8b-instant',    label:'Llama 3.1 8B (fast)'},
-      {id:'mixtral-8x7b-32768',      label:'Mixtral 8x7B'}
+const PROVIDERS={
+  groq:{
+    label:'Groq',url:'https://api.groq.com/openai/v1/chat/completions',
+    models:[
+      {id:'llama-3.3-70b-versatile',label:'Llama 3.3 70B (recommended)'},
+      {id:'llama-3.1-8b-instant',label:'Llama 3.1 8B (fast)'},
+      {id:'mixtral-8x7b-32768',label:'Mixtral 8x7B'}
     ],
-    keyPlaceholder: 'gsk_...',
-    keyNote: 'Free key at <a href="https://console.groq.com" target="_blank">console.groq.com</a>',
-    authHeader: key => `Bearer ${key}`,
-    buildBody: (model, sys, user) => JSON.stringify({
-      model, temperature: 0.3, max_tokens: 2048,
-      response_format: {type:'json_object'},
-      messages: [{role:'system',content:sys},{role:'user',content:user}]
-    })
+    keyPlaceholder:'gsk_...',
+    keyNote:'Free key at <a href="https://console.groq.com" target="_blank">console.groq.com</a>',
+    buildBody:(model,sys,user)=>JSON.stringify({model,temperature:0.3,max_tokens:2048,response_format:{type:'json_object'},messages:[{role:'system',content:sys},{role:'user',content:user}]}),
+    getContent:data=>data.choices?.[0]?.message?.content||'',
+    authHeader:key=>({'Authorization':`Bearer ${key}`})
   },
-  openai: {
-    label: 'OpenAI',
-    url: 'https://api.openai.com/v1/chat/completions',
-    models: [
-      {id:'gpt-4o',      label:'GPT-4o (recommended)'},
-      {id:'gpt-4o-mini', label:'GPT-4o mini (fast)'},
-      {id:'o1-mini',     label:'o1-mini'}
+  openai:{
+    label:'OpenAI',url:'https://api.openai.com/v1/chat/completions',
+    models:[
+      {id:'gpt-4o',label:'GPT-4o (recommended)'},
+      {id:'gpt-4o-mini',label:'GPT-4o mini (fast)'}
     ],
-    keyPlaceholder: 'sk-...',
-    keyNote: 'Get a key at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a>',
-    authHeader: key => `Bearer ${key}`,
-    buildBody: (model, sys, user) => JSON.stringify({
-      model, max_tokens: 2048,
-      response_format: {type:'json_object'},
-      messages: [{role:'system',content:sys},{role:'user',content:user}]
-    })
+    keyPlaceholder:'sk-...',
+    keyNote:'Key at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a>',
+    buildBody:(model,sys,user)=>JSON.stringify({model,max_tokens:2048,response_format:{type:'json_object'},messages:[{role:'system',content:sys},{role:'user',content:user}]}),
+    getContent:data=>data.choices?.[0]?.message?.content||'',
+    authHeader:key=>({'Authorization':`Bearer ${key}`})
   },
-  anthropic: {
-    label: 'Anthropic',
-    url: 'https://api.anthropic.com/v1/messages',
-    models: [
-      {id:'claude-sonnet-4-20250514', label:'Claude Sonnet 4 (recommended)'},
-      {id:'claude-haiku-4-5-20251001', label:'Claude Haiku 4.5 (fast)'}
+  anthropic:{
+    label:'Anthropic',url:'https://api.anthropic.com/v1/messages',
+    models:[
+      {id:'claude-sonnet-4-20250514',label:'Claude Sonnet 4 (recommended)'},
+      {id:'claude-haiku-4-5-20251001',label:'Claude Haiku 4.5 (fast)'}
     ],
-    keyPlaceholder: 'sk-ant-...',
-    keyNote: 'Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>',
-    authHeader: key => key,
-    buildBody: (model, sys, user) => JSON.stringify({
-      model, max_tokens: 2048,
-      system: sys,
-      messages: [{role:'user',content:user}]
-    }),
-    extraHeaders: {'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}
+    keyPlaceholder:'sk-ant-...',
+    keyNote:'Key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>',
+    buildBody:(model,sys,user)=>JSON.stringify({model,max_tokens:2048,system:sys,messages:[{role:'user',content:user}]}),
+    getContent:data=>(data.content||[]).map(b=>b.text||'').join(''),
+    authHeader:key=>({'x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'})
   }
 };
 
 const DIMS=[
-  {id:'d0',label:'Intent & Problem Framing',desc:'Before the diagnostic begins — what are you actually trying to solve? This anchors every finding that follows.',questions:[
-    {id:'q0a',text:'What specific problems are you trying to solve through AI transformation?',type:'textarea',hint:'Be specific. Name the operational problem, not a technology aspiration.'},
-    {id:'q0b',text:'Who defined those problems — and how recently?',type:'single',options:['Business leaders named them, with evidence of cost or impact','Technology or transformation team proposed them, business has agreed','They emerged from a strategy process in the last 12 months',"They've been on the agenda for a while — origins are unclear","We're still in the process of defining them"]},
-    {id:'q0c',text:"Are these existing problems you're solving with AI — or problems AI has surfaced?",type:'single',options:['Existing known problems — AI is the proposed solution','New problems AI has revealed — e.g. data gaps, process opacity','Both',"Honestly, we're not sure yet"]}
+  {id:'d0',label:'Intent & Problem Framing',
+   desc:'Before the diagnostic begins — what are you actually trying to solve? This anchors every finding that follows.',
+   questions:[
+    {id:'q0a',text:'What specific problems are you trying to solve through AI transformation?',type:'textarea',
+     hint:'Be specific. Name the operational problem, not a technology aspiration.'},
+    {id:'q0b',text:'Who defined those problems — and how recently?',type:'single',options:[
+      'Business leaders named them, with evidence of cost or impact',
+      'Technology or transformation team proposed them, business has agreed',
+      'They emerged from a strategy process in the last 12 months',
+      "They've been on the agenda for a while — origins are unclear",
+      "We're still in the process of defining them"]}
   ]},
-  {id:'d1',label:'Data Readiness',desc:"Not whether data exists — but whether it's accessible, trusted, and owned.",questions:[
-    {id:'q1',text:'If a business analyst needed data for a 4-week pilot, how long would it take to get access?',type:'single',options:['Same day — self-serve access exists','A few days — a request process, but it moves','Several weeks — approvals, legal, procurement involved',"Months — or it effectively doesn't happen","We don't know — it's never been tried"]},
-    {id:'q2',text:'Is there a known data quality problem people work around rather than fix?',type:'textarea',hint:'Describe it briefly. If yes, how long has it existed?'},
-    {id:'q3',text:'Who owns your most important data — and is that ownership contested?',type:'single',options:['Clear ownership, no disputes','Ownership exists on paper but is disputed in practice','Multiple teams claim ownership of the same data','Nobody really owns it']},
-    {id:'q4',text:'How would you describe confidence in your data among people who use it to make decisions?',type:'single',options:['High — people trust it and act on it','Mixed — some sources trusted, others not','Low — people verify everything manually before acting','Unknown — nobody has asked']}
+  {id:'d1',label:'Data Readiness',
+   desc:"Not whether data exists — but whether it's accessible, trusted, and owned.",
+   questions:[
+    {id:'q1',text:'If a business analyst needed data for a 4-week pilot, how long would it take to get access?',type:'single',options:[
+      'Same day — self-serve access exists',
+      'A few days — a request process, but it moves',
+      'Several weeks — approvals, legal, procurement involved',
+      "Months — or it effectively doesn't happen",
+      "We don't know — it's never been tried"]},
+    {id:'q2',text:'Is there a known data quality problem people work around rather than fix?',type:'textarea',
+     hint:'Describe it briefly. If yes, how long has it existed?'},
+    {id:'q3',text:'Who owns your most important data — and is that ownership contested?',type:'single',options:[
+      'Clear ownership, no disputes',
+      'Ownership exists on paper but is disputed in practice',
+      'Multiple teams claim ownership of the same data',
+      'Nobody really owns it']},
+    {id:'q4',text:'When people use data to make decisions — do they act on it directly, or do they verify it first?',type:'single',options:[
+      'Act directly — data is trusted and used as-is',
+      'Usually act directly, but verify in high-stakes situations',
+      'Almost always verify first — there is a known reliability problem',
+      'Verification is so common it has become an unofficial process step',
+      "We don't have visibility into how decisions are actually made"]}
   ]},
-  {id:'d1b',label:'Knowledge Accessibility',desc:'Whether your domain knowledge is in a state where AI tools can actually reach it.',questions:[
-    {id:'q4b',text:'Where does most of your operational and domain knowledge actually live?',type:'single',options:['Structured documents — policies, procedures, wikis (reasonably maintained)',"Scattered — SharePoint, email threads, someone's hard drive","In people's heads — the tribal knowledge problem",'A mix, with no clear map of where to find what']},
-    {id:'q4c',text:'How much of that knowledge is openly accessible internally vs locked behind controls?',type:'single',options:['Most is open internally — anyone can find and read it','Some is open, but key documents require approval or role access','Most is restricted — need-to-know, team-by-team','Almost all controlled — even finding what exists requires permission']},
-    {id:'q4d',text:'If you wanted to build an internal AI tool over your domain knowledge — what would be the first obstacle?',type:'textarea',hint:'Common answers: legal/compliance approval, finding where everything is, outdated content.'},
-    {id:'q4e',text:'Are there AI tools already in use — officially or unofficially — that people are feeding internal documents into?',type:'single',options:['Yes, officially sanctioned tools with defined boundaries','Yes, but informally — ChatGPT, Claude, Copilot with internal docs','Not that we know of',"It's explicitly prohibited and enforced"]}
+  {id:'d1b',label:'Knowledge Accessibility',
+   desc:'Whether your domain knowledge is in a state where AI tools can actually reach it.',
+   questions:[
+    {id:'q4b',text:'Where does most of your operational and domain knowledge actually live?',type:'single',options:[
+      'Structured documents — policies, procedures, wikis (reasonably maintained)',
+      "Scattered — SharePoint, email threads, someone's hard drive",
+      "In people's heads — the tribal knowledge problem",
+      'A mix, with no clear map of where to find what']},
+    {id:'q4c',text:'How much of that knowledge is openly accessible internally vs locked behind controls?',type:'single',options:[
+      'Most is open internally — anyone can find and read it',
+      'Some is open, but key documents require approval or role access',
+      'Most is restricted — need-to-know, team-by-team',
+      'Almost all controlled — even finding what exists requires permission']},
+    {id:'q4d',text:'If you wanted to build an internal AI tool over your domain knowledge — what would be the first obstacle?',type:'textarea',
+     hint:'Common answers: legal/compliance approval, finding where everything is, outdated content, data ownership disputes.'},
+    {id:'q4e',text:'Are there AI tools already in use — officially or unofficially — that people are feeding internal documents into?',type:'single',options:[
+      'Yes, officially sanctioned tools with defined boundaries',
+      'Yes, informally — people using ChatGPT, Claude, or Copilot with internal docs',
+      "Not that we're aware of — or we genuinely don't know",
+      "It's explicitly prohibited and enforced"]}
   ]},
-  {id:'d2',label:'Process Clarity',desc:'Whether the organisation understands its own work well enough for AI to help with it.',questions:[
-    {id:'q5',text:'Can you name your two or three most important value streams and where each one slows down?',type:'textarea',hint:'A specific answer with a named bottleneck signals high process clarity.'},
-    {id:'q6',text:'If you had to pick one handoff to eliminate or automate tomorrow, which would it be?',type:'textarea',hint:'Name the specific handoff and why it costs time or quality.'},
-    {id:'q7',text:'How documented are your core processes — honestly?',type:'single',options:['Well documented and kept up to date','Documented but out of date','Documented for compliance, not for use',"Mostly in people's heads"]}
+  {id:'d2',label:'Process Clarity',
+   desc:'Whether the organisation understands its own work well enough for AI to help with it.',
+   questions:[
+    {id:'q5',text:'Can you name your two or three most important value streams and where each one slows down?',type:'textarea',
+     hint:"A specific answer with a named bottleneck signals high process clarity. 'It depends' signals low clarity."},
+    {id:'q7',text:'How documented are your core processes — honestly?',type:'single',options:[
+      'Well documented and kept up to date',
+      'Documented but out of date',
+      'Documented for compliance, not for use',
+      "Mostly in people's heads"]}
   ]},
-  {id:'d3',label:'Governance & Risk',desc:"Whether there's real ownership, real risk awareness, and a realistic relationship with failure.",questions:[
-    {id:'q8',text:'If an AI model made a consequential error — who in your organisation is accountable?',type:'single',options:['A named person with clear accountability already defined','It would probably land with IT or the vendor',"It's unclear — would depend on the situation","We haven't thought through this scenario yet"]},
-    {id:'q9',text:'Which regulatory frameworks directly shape how your organisation can use AI?',type:'multi',options:['SR 11-7 (Model Risk — US banking)','SS1/23 (PRA model risk — UK banking)','EU AI Act','DORA (Digital Operational Resilience)','GDPR / data privacy','Internal model risk policy',"We're not sure which apply","None we're aware of"]},
-    {id:'q10',text:"What is your organisation's actual risk appetite for AI errors — not stated policy, but real tolerance?",type:'single',options:['Zero tolerance — any AI error is a serious incident','Low — errors acceptable only in low-stakes internal cases','Moderate — some error rate acceptable if humans are in the loop','Pragmatic — treat AI errors like human errors: learn and fix',"We haven't had an honest conversation about this yet"]},
-    {id:'q11',text:'When your organisation has had a technology failure — how was it handled?',type:'single',options:['Post-mortem, learning, process change — blameless culture','Post-mortem, but mainly focused on finding who was responsible','Quietly fixed, minimal documentation','Escalated, compliance involved, significant fallout',"We haven't had a significant incident (or none that became visible)"]},
-    {id:'q12',text:'Is there a defined process for approving a new AI model before it goes to production?',type:'single',options:['Yes — model risk or AI governance process exists and is followed',"Partially — some tools reviewed, others not",'No formal process — case by case','No process yet, but one is being designed','Process exists but people route around it']}
+  {id:'d3',label:'Governance & Risk',
+   desc:"Whether there's real ownership, real risk awareness, and a realistic relationship with failure.",
+   questions:[
+    {id:'q8',text:'If an AI model made a consequential error — who in your organisation is accountable?',type:'single',options:[
+      'A named person with clear accountability already defined',
+      'It would probably land with IT or the vendor',
+      "It's unclear — would depend on the situation",
+      "We haven't thought through this scenario yet"]},
+    {id:'q9',text:'Which regulatory frameworks directly shape how your organisation can use AI?',type:'multi',options:[
+      'SR 11-7 (Model Risk Management — US banking)',
+      'SS1/23 (PRA model risk — UK banking)',
+      'EU AI Act',
+      'DORA (Digital Operational Resilience)',
+      'GDPR / data privacy',
+      'Internal model risk policy',
+      "We're not sure which apply",
+      "None we're aware of"]},
+    {id:'q10',text:"What is your organisation's actual risk appetite for AI errors — not stated policy, but real tolerance?",type:'single',options:[
+      'Zero tolerance — any AI error would be a serious incident',
+      'Low — errors acceptable only in low-stakes internal use cases',
+      'Moderate — some error rate acceptable if humans are in the loop',
+      'Pragmatic — treat AI errors like human errors: learn and fix',
+      "We haven't had an honest conversation about this yet"]},
+    {id:'q11',text:'When your organisation has had a technology failure — how was it handled?',type:'single',options:[
+      'Post-mortem, learning, process change — blameless culture',
+      'Post-mortem, but mainly focused on finding who was responsible',
+      'Quietly fixed, minimal documentation',
+      'Escalated, compliance involved, significant fallout',
+      "We haven't had a significant incident — or none that became visible"]},
+    {id:'q12',text:'Is there a defined process for approving a new AI model before it goes to production?',type:'single',options:[
+      'Yes — model risk or AI governance process exists and is followed',
+      "Partially — some tools reviewed, others not",
+      'No formal process — case by case',
+      'No process yet, but one is being designed',
+      'Process exists but people route around it']}
   ]},
-  {id:'d4',label:'Organisational Readiness',desc:'Whether the organisation is culturally and structurally ready — not just technically capable.',questions:[
-    {id:'q13',text:"How would you describe leadership's current relationship with AI?",type:'single',options:['Actively sponsoring — named initiatives, budget allocated, personal involvement',"Supportive but passive — want it to happen, but it's delegated",'Interested but cautious — watching, not committing','Sceptical — need to be convinced before resources move','Divided — some leaders pushing, others blocking']},
-    {id:'q14',text:'Are people already using AI tools without official approval or outside defined boundaries?',type:'single',options:['Yes, and we know roughly who and how',"Probably, but we don't have visibility","It's explicitly prohibited and we believe it's enforced","We don't know"]},
-    {id:'q15',text:'When a technology pilot fails — what typically happens next?',type:'single',options:['Documented, learnings shared, next experiment designed','Quietly wound down, not discussed','Someone held responsible, there are consequences','Reframed as a success to protect the sponsor',"We don't run many pilots — we prefer certainty before starting"]},
-    {id:'q16',text:'How many significant transformation initiatives is your organisation currently running?',type:'single',options:['One or two — focused, well-resourced','Three to five — manageable but stretching capacity','Six or more — many competing priorities',"We've lost count — everything is a priority"]},
-    {id:'q17',text:'Who in your organisation connects the AI agenda to actual business outcomes?',type:'single',options:['A named person or team with that explicit role','It happens informally — a few people carry that bridge','Nobody really — technology and business are separate conversations',"It's assumed the technology team will figure out the value"]}
+  {id:'d4',label:'Organisational Readiness',
+   desc:'Whether the organisation is culturally and structurally ready — not just technically capable.',
+   questions:[
+    {id:'q13',text:"How would you describe leadership's current relationship with AI?",type:'single',options:[
+      'Actively sponsoring — named initiatives, budget allocated, personal involvement',
+      "Supportive but passive — want it to happen, but it's delegated",
+      'Interested but cautious — watching, not committing',
+      'Sceptical — need to be convinced before resources move',
+      'Divided — some leaders pushing, others blocking']},
+    {id:'q14',text:'Are people already using AI tools without official approval or outside defined boundaries?',type:'single',options:[
+      'Yes, and we know roughly who and how',
+      "Probably — but we don't have visibility",
+      "It's explicitly prohibited and we believe it's enforced",
+      "We don't know"]},
+    {id:'q15',text:'When a technology pilot fails — what typically happens next?',type:'single',options:[
+      'Documented, learnings shared, next experiment designed',
+      'Quietly wound down, not discussed',
+      'Someone held responsible, there are consequences',
+      'Reframed as a success to protect the sponsor',
+      "We don't run many pilots — we prefer certainty before starting"]},
+    {id:'q16',text:'How many significant transformation initiatives is your organisation currently running?',type:'single',options:[
+      'One or two — focused, well-resourced',
+      'Three to five — manageable but stretching capacity',
+      'Six or more — many competing priorities',
+      "We've lost count — everything is a priority"]},
+    {id:'q17',text:'Who in your organisation connects the AI agenda to actual business outcomes?',type:'single',options:[
+      'A named person or team with that explicit role',
+      'It happens informally — a few people carry that bridge',
+      'Nobody really — technology and business strategy are separate conversations',
+      "It's assumed the technology team will figure out the value"]},
+    {id:'q17a',text:'Have the people whose day-to-day work would change most been involved in designing or scoping the AI programme?',type:'single',options:[
+      "Yes — they've been consulted and their input has shaped the approach",
+      'Partially — some involvement, but mostly after decisions were made',
+      'Not yet — it is planned for a later stage',
+      'No — the programme has been designed by technology and leadership',
+      "We haven't identified who those people are yet"]},
+    {id:'q17b',text:'How much of your AI programme budget and effort is going toward people, process, and adoption vs technology and tools?',type:'single',options:[
+      'Majority on people and process — technology is a smaller part',
+      'Roughly balanced',
+      'Majority on technology — people and process will follow',
+      "We haven't thought about it in those terms",
+      "There isn't a defined budget yet"]},
+    {id:'q17c',text:'For the managers and team leads whose teams would use AI most — how do they see it?',type:'single',options:[
+      "They're pulling it in — asking for it, running their own experiments",
+      'Engaged but cautious — open if shown the value',
+      'Complying but not engaged — doing what is asked, no more',
+      'Resistant — visible concern about job impact or added workload',
+      "We haven't asked them"]}
   ]},
-  {id:'d5',label:'Skills & Knowledge',desc:"Whether the organisation has the judgment to use AI well and catch it when it's wrong.",questions:[
-    {id:'q18',text:'If a vendor said their model was "97% accurate" — who could meaningfully evaluate that claim?',type:'single',options:['Several people — we have that capability internally',"One or two people, but they're not always in the room","We'd need to bring in external help","Nobody — we'd probably take it at face value","We'd ask the vendor but wouldn't know if the answer was good"]},
-    {id:'q19',text:'Where would you place your organisation on the AI literacy / domain knowledge matrix?',type:'single',options:['Enthusiastic but naive — excited about AI, limited ability to evaluate it','Capable and critical — understands AI and has strong domain knowledge','Expert but AI-sceptical — deep domain expertise, low trust in AI','Disengaged — neither AI literacy nor domain engagement is strong','Divided — different parts of the organisation in different quadrants']},
-    {id:'q20',text:'How does your organisation currently build AI knowledge — and is it working?',type:'single',options:['Formal training programmes — structured and tracked','Vendor-led learning — mostly through partnerships and pilots','Self-directed — individuals learning on their own time',"Not systematically — knowledge concentrated in a few people","We're not sure it's working regardless of method"]}
+  {id:'d5',label:'Skills & Knowledge',
+   desc:"Whether the organisation has the judgment to use AI well and catch it when it's wrong.",
+   questions:[
+    {id:'q18',text:'If a vendor said their model was "97% accurate" — who in your organisation could meaningfully evaluate that claim?',type:'single',options:[
+      'Several people — we have that capability internally',
+      "One or two people, but they're not always in the room",
+      "We'd need external help",
+      "Nobody — we'd probably take it at face value",
+      "We'd ask the vendor but wouldn't know if the answer was good"]},
+    {id:'q19',text:'Where would you place your organisation on the AI literacy / domain knowledge matrix?',type:'single',options:[
+      'Enthusiastic but naive — excited about AI, limited ability to evaluate it',
+      'Capable and critical — understands AI and has strong domain knowledge',
+      'Expert but AI-sceptical — deep domain expertise, low trust in AI',
+      'Disengaged — neither AI literacy nor domain engagement is strong',
+      'Divided — different parts of the organisation sit in different quadrants']},
+    {id:'q20',text:'The people who can critically evaluate AI — vendor claims, model outputs, failure modes — are they in the room when AI decisions are made?',type:'single',options:[
+      "Yes — they're consistently involved in decisions",
+      'Sometimes — depends on the decision and who initiates it',
+      'Rarely — they are available but not routinely consulted',
+      'No — evaluation capability and decision-making are in separate parts of the organisation',
+      "We don't have people with that capability"]}
   ]},
-  {id:'d6',label:'Ambition vs Capacity',desc:'Whether appetite for AI transformation is matched by realistic capacity to deliver.',questions:[
-    {id:'q21',text:"How would you honestly describe your organisation's AI ambition right now?",type:'single',options:['Specific and grounded — defined use cases, clear value hypothesis, scoped pilots','Strategic but vague — AI is in the strategy, use cases still being identified','Aspirational — language is ambitious, roadmap is not yet real','Reactive — responding to competitor moves or board pressure','Cautious — deliberately measured, waiting for the market to mature']},
-    {id:'q22',text:'What would realistically have to stop — or slow down — for AI transformation to get the attention it needs?',type:'textarea',hint:"The most honest question in the assessment. If the answer is 'nothing', that tells you something important."},
-    {id:'q23',text:'If your AI transformation delivered exactly what you hoped in 18 months — what would be visibly different?',type:'textarea',hint:"Name specific outcomes. 'We'd be AI-first' is not an answer."}
+  {id:'d6',label:'Ambition vs Capacity',
+   desc:'Whether appetite for AI transformation is matched by realistic capacity to deliver.',
+   questions:[
+    {id:'q21',text:"How would you honestly describe your organisation's AI ambition right now?",type:'single',options:[
+      'Specific and grounded — defined use cases, clear value hypothesis, scoped pilots',
+      'Strategic but vague — AI is in the strategy, use cases still being identified',
+      'Aspirational — language is ambitious, roadmap is not yet real',
+      'Reactive — responding to competitor moves or board pressure',
+      'Cautious — deliberately measured, waiting for the market to mature']},
+    {id:'q22',text:'What would realistically have to stop — or slow down — for AI transformation to get the attention it actually needs?',type:'textarea',
+     hint:"The most honest question in the assessment. If the answer is 'nothing' — that tells you something important."},
+    {id:'q22a',text:'Has your organisation made an explicit decision about whether to build AI capability internally, buy from vendors, or partner externally?',type:'single',options:[
+      'Yes — explicit decision with clear rationale for this use case',
+      'Leaning toward building internally, mainly for data control or IP reasons',
+      'Leaning toward vendors, but no formal decision yet',
+      'Different teams are doing different things with no coordination',
+      'Not yet decided']},
+    {id:'q23',text:'If your AI transformation delivered exactly what you hoped in 18 months — what would be visibly different?',type:'textarea',
+     hint:"Name specific outcomes, not categories. 'We'd be an AI-first organisation' is not an answer."}
   ]}
 ];
 
@@ -237,32 +370,32 @@ Rules:
 - When naming a risk or gap, state the specific consequence for this organisation — not the category. "Partial approval process" is not a finding. "Partial approval process means an AI tool could reach production without model risk sign-off, which is a regulatory breach under SR 11-7 or SS1/23" is a finding.
 - Sequence recommendations step 1, step 2, step 3 — never a flat list.
 - Connect all findings to the stated problem in Q0A.
+- Pay particular attention to: end-user co-design gaps (Q17A), change management investment imbalance (Q17B), middle-layer resistance (Q17C), build vs buy decision quality (Q22A), and whether evaluation capability is in the room when decisions are made (Q20).
 
 Return ONLY valid JSON with no markdown, no backticks, no preamble:
 {"problem_restatement":"2 sentences restating Q0A precisely, surfacing ambiguity if present","primary_constraint":{"label":"short name","explanation":"2-3 sentences grounded in specific answers, naming which questions revealed this","why_this_first":"1 sentence on why resolving this unlocks everything else"},"dimension_profiles":[{"dimension":"name","maturity":"low|developing|capable|advanced","key_finding":"1-2 sentences specific to their answers","watch_out":"specific risk or null"}],"recommended_sequence":[{"step":1,"action":"specific action not a category","rationale":"why this first grounded in their answers","timeframe":"realistic timeframe","success_looks_like":"what they would see if this worked"}],"problem_readiness_gap":"2 sentences honest gap assessment","questions_they_should_be_asking":["3-5 questions grounded in their specific answers"],"red_flags":["explicit blockers traceable to specific answers — empty array if none"],"assessor_note":"2 sentences candid summary"}`;
 
-// Load saved preferences
-const savedProvider = localStorage.getItem('gw_provider') || 'groq';
-const savedModel    = localStorage.getItem('gw_model')    || 'llama-3.3-70b-versatile';
-const savedKey      = localStorage.getItem('gw_key')      || '';
-const savedRemember = localStorage.getItem('gw_remember') === 'true';
+const savedProv=localStorage.getItem('gw_provider')||'groq';
+const savedModel=localStorage.getItem('gw_model')||'llama-3.3-70b-versatile';
+const savedKey=localStorage.getItem('gw_key')||'';
+const savedRem=localStorage.getItem('gw_remember')==='true';
 
-let S={
-  screen:'welcome', dimIdx:0, orgName:'', answers:{}, result:null, error:'',
-  provider: savedProvider,
-  model: savedModel,
-  apiKey: savedKey,
-  remember: savedRemember
-};
+let S={screen:'welcome',dimIdx:0,orgName:'',answers:{},result:null,error:'',
+       provider:savedProv,model:savedModel,apiKey:savedKey,remember:savedRem};
 
 function root(){return document.getElementById('app')}
 function $id(id){return document.getElementById(id)}
 
+function esc(s){
+  if(s===null||s===undefined)return'';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function answered(q,ans){
   const v=ans[q.id];
-  if(q.type==='textarea') return v&&v.trim().length>0;
-  if(q.type==='single')   return v!==undefined&&v!==null&&v!=='';
-  if(q.type==='multi')    return Array.isArray(v)&&v.length>0;
+  if(q.type==='textarea')return v&&v.trim().length>0;
+  if(q.type==='single')return v!==undefined&&v!==null&&v!=='';
+  if(q.type==='multi')return Array.isArray(v)&&v.length>0;
   return false;
 }
 function dimOk(dim){return dim.questions.every(q=>answered(q,S.answers))}
@@ -282,29 +415,28 @@ function buildMsg(){
 
 function mc(m){
   const v=(m||'').toLowerCase();
-  if(v==='low')       return 'm-low';
+  if(v==='low')return 'm-low';
   if(v==='developing')return 'm-developing';
-  if(v==='capable')   return 'm-capable';
-  if(v==='advanced')  return 'm-advanced';
+  if(v==='capable')return 'm-capable';
+  if(v==='advanced')return 'm-advanced';
   return 'm-developing';
 }
 
 function render(){
   const s=S.screen;
-  if(s==='welcome') rWelcome();
-  else if(s==='dim')     rDim();
-  else if(s==='review')  rReview();
+  if(s==='welcome')rWelcome();
+  else if(s==='dim')rDim();
+  else if(s==='review')rReview();
   else if(s==='generate')rGenerate();
-  else if(s==='loading') rLoading();
-  else if(s==='result')  rResult();
+  else if(s==='loading')rLoading();
+  else if(s==='result')rResult();
 }
 
-/* ── WELCOME ── */
 function rWelcome(){
   root().innerHTML=`
     <div class="eyebrow">Enterprise Assessment Tool</div>
     <div class="stitle">AI Readiness<br>Assessment</div>
-    <div class="sdesc">A structured diagnostic across seven dimensions — intent, data, process, governance, organisational readiness, skills, and capacity. Takes 25–30 minutes and produces an AI-generated readiness profile.</div>
+    <div class="sdesc">A structured diagnostic across eight dimensions — intent, data, process, governance, organisational readiness, skills, and capacity. Built around constraint thinking, value stream awareness, and the research on why AI transformations actually fail.<br><br>Takes 25–30 minutes. Produces an AI-generated readiness profile specific to your organisation.</div>
     <hr class="div">
     <div class="field">
       <label for="oi">Organisation name</label>
@@ -313,13 +445,12 @@ function rWelcome(){
     <div class="nav">
       <button class="btn btn-p" id="sb" onclick="goStart()" ${S.orgName.trim()?'':'disabled'}>Begin assessment →</button>
     </div>
-    <div style="margin-top:1.5rem;font-size:12px;color:var(--text-ter)">30 questions · 8 dimensions · ~25 minutes · AI key required at submission</div>
+    <div style="margin-top:1.5rem;font-size:12px;color:var(--text-ter)">32 questions · 8 dimensions · ~25 minutes · AI key required at submission</div>
   `;
 }
 function checkW(){const b=$id('sb');if(b)b.disabled=!S.orgName.trim()}
 function goStart(){S.screen='dim';S.dimIdx=0;render();scrollTo(0,0)}
 
-/* ── DIMENSION ── */
 function rDim(){
   const dim=DIMS[S.dimIdx];
   const pct=Math.round((S.dimIdx/DIMS.length)*100);
@@ -335,16 +466,17 @@ function rDim(){
     } else {
       inp=`<textarea class="ta" id="ta-${q.id}" oninput="setTA('${q.id}',this.value)" placeholder="Type your answer...">${esc(v||'')}</textarea>`;
     }
-    return `<div class="q-block"><div class="q-text">${q.text}</div>${q.hint?`<div class="q-hint">${q.hint}</div>`:''}${inp}</div>`;
+    return `<div class="q-block"><div class="q-text">${esc(q.text)}</div>${q.hint?`<div class="q-hint">${esc(q.hint)}</div>`:''}${inp}</div>`;
   }).join('');
+
   root().innerHTML=`
     <div class="prog-wrap">
-      <div class="prog-meta"><span>${dim.label}</span><span>${S.dimIdx+1} of ${DIMS.length}</span></div>
+      <div class="prog-meta"><span>${esc(dim.label)}</span><span>${S.dimIdx+1} of ${DIMS.length}</span></div>
       <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
     </div>
     <div class="eyebrow">Dimension ${S.dimIdx+1}</div>
-    <div class="stitle" style="font-size:22px;margin-bottom:6px">${dim.label}</div>
-    <div class="sdesc">${dim.desc}</div>
+    <div class="stitle" style="font-size:22px;margin-bottom:6px">${esc(dim.label)}</div>
+    <div class="sdesc">${esc(dim.desc)}</div>
     ${qs}
     ${!ok?`<div class="warn-text">Answer all questions to continue</div>`:''}
     <div class="nav">
@@ -353,12 +485,19 @@ function rDim(){
     </div>
   `;
 }
-function pickS(qId,oi){S.answers[qId]=DIMS[S.dimIdx].questions.find(x=>x.id===qId).options[oi];rDim()}
+
+function pickS(qId,oi){
+  const dim=DIMS[S.dimIdx];
+  S.answers[qId]=dim.questions.find(x=>x.id===qId).options[oi];
+  rDim();
+}
 function pickM(qId,oi){
-  const opt=DIMS[S.dimIdx].questions.find(x=>x.id===qId).options[oi];
+  const dim=DIMS[S.dimIdx];
+  const opt=dim.questions.find(x=>x.id===qId).options[oi];
   if(!S.answers[qId])S.answers[qId]=[];
   const idx=S.answers[qId].indexOf(opt);
-  if(idx>=0)S.answers[qId].splice(idx,1);else S.answers[qId].push(opt);
+  if(idx>=0)S.answers[qId].splice(idx,1);
+  else S.answers[qId].push(opt);
   rDim();
 }
 function setTA(qId,val){
@@ -373,15 +512,14 @@ function goNext(){
   else{S.screen='review';render();scrollTo(0,0);}
 }
 function goBack(){
-  if(S.screen==='review')    {S.screen='dim';S.dimIdx=DIMS.length-1;}
+  if(S.screen==='review'){S.screen='dim';S.dimIdx=DIMS.length-1;}
   else if(S.screen==='generate'){S.screen='review';}
-  else if(S.screen==='result') {S.screen='generate';}
-  else if(S.dimIdx>0)          {S.dimIdx--;}
-  else                          {S.screen='welcome';}
+  else if(S.screen==='result'){S.screen='generate';}
+  else if(S.dimIdx>0){S.dimIdx--;}
+  else{S.screen='welcome';}
   render();scrollTo(0,0);
 }
 
-/* ── REVIEW ── */
 function rReview(){
   const rows=DIMS.map(dim=>{
     const qs=dim.questions.map(q=>{
@@ -389,10 +527,11 @@ function rReview(){
       const disp=Array.isArray(v)
         ?`<div class="chip-wrap">${v.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>`
         :`<span>${esc(v||'—')}</span>`;
-      return `<div class="rev-row"><div class="rev-q">${q.id.toUpperCase()}</div><div class="rev-a">${disp}</div></div>`;
+      return `<div class="rev-row"><div class="rev-q">${esc(q.id.toUpperCase())}</div><div class="rev-a">${disp}</div></div>`;
     }).join('');
-    return `<div class="rev-dim"><div class="rev-dim-title">${dim.label}</div>${qs}</div>`;
+    return `<div class="rev-dim"><div class="rev-dim-title">${esc(dim.label)}</div>${qs}</div>`;
   }).join('<hr class="div">');
+
   root().innerHTML=`
     <div class="prog-wrap">
       <div class="prog-meta"><span>Review</span><span>All complete</span></div>
@@ -409,14 +548,13 @@ function rReview(){
   `;
 }
 
-/* ── GENERATE (model + key selection) ── */
 function rGenerate(){
   const prov=PROVIDERS[S.provider];
-  const modelOpts=prov.models.map(m=>`<option value="${m.id}" ${S.model===m.id?'selected':''}>${m.label}</option>`).join('');
+  const modelOpts=prov.models.map(m=>`<option value="${esc(m.id)}" ${S.model===m.id?'selected':''}>${esc(m.label)}</option>`).join('');
   const provBtns=Object.entries(PROVIDERS).map(([k,p])=>
-    `<button class="provider-btn${S.provider===k?' sel':''}" onclick="setProvider('${k}')">${p.label}</button>`
+    `<button class="provider-btn${S.provider===k?' sel':''}" onclick="setProvider('${k}')">${esc(p.label)}</button>`
   ).join('');
-  const hasKey=!!S.apiKey.trim();
+
   root().innerHTML=`
     <div class="prog-wrap">
       <div class="prog-meta"><span>Generate</span><span>Final step</span></div>
@@ -424,7 +562,6 @@ function rGenerate(){
     </div>
     <div class="stitle" style="font-size:22px;margin-bottom:6px">Generate Profile</div>
     <div class="sdesc">Choose your AI provider and model, enter your API key, then generate the readiness profile for <strong>${esc(S.orgName)}</strong>.</div>
-
     <div class="gen-card">
       <div class="gen-card-title">Provider</div>
       <div class="provider-grid">${provBtns}</div>
@@ -442,11 +579,10 @@ function rGenerate(){
         Remember key on this device
       </label>
     </div>
-
     <div id="gen-err"></div>
     <div class="nav">
       <button class="btn" onclick="goBack()">← Back to review</button>
-      <button class="btn btn-p" id="gen-btn" onclick="runSynthesis()" ${hasKey?'':'disabled'}>Generate readiness profile →</button>
+      <button class="btn btn-p" id="gen-btn" onclick="runSynthesis()" ${S.apiKey.trim()?'':'disabled'}>Generate readiness profile →</button>
     </div>
   `;
 }
@@ -460,16 +596,15 @@ function checkG(){
   if(b)b.disabled=!S.apiKey.trim();
 }
 
-/* ── LOADING ── */
 function rLoading(){
   root().innerHTML=`
     <div class="prog-wrap">
-      <div class="prog-meta"><span>Synthesising</span><span>${PROVIDERS[S.provider].label} · ${S.model}</span></div>
+      <div class="prog-meta"><span>Synthesising</span><span>${esc(PROVIDERS[S.provider].label)} · ${esc(S.model)}</span></div>
       <div class="prog-bar"><div class="prog-fill" style="width:100%"></div></div>
     </div>
     <div class="loading-wrap">
       <div class="spinner"></div>
-      <div class="loading-text" id="lt">Sending to ${PROVIDERS[S.provider].label}...</div>
+      <div class="loading-text" id="lt">Sending to ${esc(PROVIDERS[S.provider].label)}...</div>
     </div>
   `;
   const msgs=[`Sending to ${PROVIDERS[S.provider].label}...`,'Identifying primary constraint...','Profiling dimensions...','Sequencing recommendations...','Almost ready...'];
@@ -477,7 +612,6 @@ function rLoading(){
   window._ticker=setInterval(()=>{mi=(mi+1)%msgs.length;const e=$id('lt');if(e)e.textContent=msgs[mi];},2200);
 }
 
-/* ── API CALL ── */
 async function runSynthesis(){
   if(S.remember){
     localStorage.setItem('gw_provider',S.provider);
@@ -495,17 +629,9 @@ async function runSynthesis(){
   const prov=PROVIDERS[S.provider];
 
   try{
-    const headers={'Content-Type':'application/json'};
-    if(S.provider==='anthropic'){
-      headers['x-api-key']=S.apiKey;
-      Object.assign(headers,prov.extraHeaders||{});
-    } else {
-      headers['Authorization']=prov.authHeader(S.apiKey);
-    }
-
+    const headers={'Content-Type':'application/json',...prov.authHeader(S.apiKey)};
     const res=await fetch(prov.url,{
-      method:'POST',
-      headers,
+      method:'POST',headers,
       body:prov.buildBody(S.model,SYNTH_SYS,buildMsg())
     });
     clearInterval(window._ticker);
@@ -519,13 +645,7 @@ async function runSynthesis(){
     }
 
     const data=await res.json();
-    let raw='';
-    if(S.provider==='anthropic'){
-      raw=(data.content||[]).map(b=>b.text||'').join('');
-    } else {
-      raw=data.choices?.[0]?.message?.content||'';
-    }
-
+    const raw=prov.getContent(data);
     let parsed;
     try{
       const clean=raw.replace(/^```(?:json)?|```$/gm,'').trim();
@@ -544,7 +664,6 @@ async function runSynthesis(){
   }
 }
 
-/* ── RESULT ── */
 function rResult(){
   const d=S.result;
   if(!d){S.screen='generate';render();return;}
@@ -568,7 +687,9 @@ function rResult(){
       </div>
     </div>`).join('');
 
-  const qHTML=(d.questions_they_should_be_asking||[]).map((q,i)=>`<div class="q-item"><span class="q-num">${i+1}.</span><span>${esc(q)}</span></div>`).join('');
+  const qHTML=(d.questions_they_should_be_asking||[]).map((q,i)=>
+    `<div class="q-item"><span class="q-num">${i+1}.</span><span>${esc(q)}</span></div>`
+  ).join('');
 
   const flags=d.red_flags||[];
   const flagHTML=flags.length?`
@@ -620,7 +741,7 @@ function rResult(){
       <div class="rb-label">Assessor's note</div>
       <div class="assessor-card">${esc(d.assessor_note||'')}</div>
     </div>
-    <div class="model-credit">Generated by ${esc(modelLabel)} · ${PROVIDERS[S.provider].label}</div>
+    <div class="model-credit">Generated by ${esc(modelLabel)} · ${esc(PROVIDERS[S.provider].label)}</div>
     <div class="nav">
       <button class="btn" onclick="goBack()">← Back</button>
       <button class="btn" onclick="resetTool()">New assessment</button>
@@ -631,15 +752,6 @@ function rResult(){
 function resetTool(){
   S={...S,screen:'welcome',dimIdx:0,orgName:'',answers:{},result:null,error:''};
   render();scrollTo(0,0);
-}
-
-function esc(str){
-  if(!str&&str!==0)return'';
-  return String(str)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
 }
 
 render();
