@@ -111,17 +111,6 @@ python3 -m http.server 8000
 
 ---
 
-## Deploying your own instance
-
-1. Fork this repository
-2. Go to Settings → Pages
-3. Source: Deploy from a branch → main → / (root)
-4. Save
-
-Your instance will be live at `https://[your-username].github.io/ai-groundwork/`
-
----
-
 ## The synthesis prompt
 
 The analytical logic lives in the synthesis prompt embedded in `index.html`. Key rules:
@@ -155,8 +144,3 @@ If you run this with a real organisation and the output surprises you — either
 
 Pull requests welcome for question improvements, additional providers, or output format changes.
 
----
-
-## Licence
-
-MIT — use freely, including commercially. Attribution appreciated but not required.
