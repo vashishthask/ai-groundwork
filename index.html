@@ -3,446 +3,183 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Readiness Assessment</title>
+<title>Groundwork — AI Readiness Assessment</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #F7F5F0;
-    --surface: #FFFFFF;
-    --border: #E2DDD6;
-    --border-light: #EDE9E3;
-    --text: #1A1714;
-    --text-sec: #5C5650;
-    --text-ter: #9B958E;
-    --accent: #1A1714;
-    --accent-fg: #F7F5F0;
-    --danger-bg: #FDF0EE;
-    --danger-border: #E8A99E;
-    --danger-text: #7A2018;
-    --warning-bg: #FDF7EE;
-    --warning-border: #E8C99E;
-    --warning-text: #7A4A18;
-    --success-bg: #F0F7F0;
-    --success-text: #1E5C2A;
-    --r: 6px;
-    --r-lg: 10px;
-  }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    line-height: 1.6;
-  }
-
-  .page {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 3rem 1.5rem 6rem;
-  }
-
-  /* Header */
-  .site-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 3rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 0.5px solid var(--border);
-  }
-  .site-logo {
-    font-family: 'DM Serif Display', serif;
-    font-size: 18px;
-    color: var(--text);
-    letter-spacing: -0.02em;
-  }
-  .site-tag {
-    font-size: 11px;
-    color: var(--text-ter);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  /* Progress */
-  .prog-wrap { margin-bottom: 2rem; }
-  .prog-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--text-ter);
-    margin-bottom: 8px;
-  }
-  .prog-bar {
-    height: 2px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .prog-fill {
-    height: 100%;
-    background: var(--text);
-    border-radius: 2px;
-    transition: width 0.4s ease;
-  }
-
-  /* Screen headings */
-  .screen-eyebrow {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-ter);
-    margin-bottom: 8px;
-  }
-  .screen-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 28px;
-    color: var(--text);
-    margin-bottom: 8px;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-  }
-  .screen-desc {
-    font-size: 14px;
-    color: var(--text-sec);
-    margin-bottom: 2rem;
-    line-height: 1.7;
-    max-width: 540px;
-  }
-
-  /* Form elements */
-  .field { margin-bottom: 1.25rem; }
-  .field label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-  .field input {
-    width: 100%;
-    padding: 11px 14px;
-    border: 0.5px solid var(--border);
-    border-radius: var(--r);
-    background: var(--surface);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: var(--text);
-    transition: border-color 0.15s;
-  }
-  .field input:focus { outline: none; border-color: var(--text); }
-  .field-note {
-    font-size: 12px;
-    color: var(--text-ter);
-    margin-top: 5px;
-    line-height: 1.5;
-  }
-  .field-note a { color: var(--text-sec); }
-
-  /* Question blocks */
-  .q-block { margin-bottom: 1.5rem; }
-  .q-text {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--text);
-    margin-bottom: 5px;
-    line-height: 1.5;
-  }
-  .q-hint {
-    font-size: 12px;
-    color: var(--text-ter);
-    margin-bottom: 10px;
-    line-height: 1.5;
-    font-style: italic;
-  }
-  .opts { display: flex; flex-direction: column; gap: 6px; }
-  .opt {
-    text-align: left;
-    padding: 10px 14px;
-    border: 0.5px solid var(--border);
-    border-radius: var(--r);
-    background: var(--surface);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    color: var(--text-sec);
-    cursor: pointer;
-    line-height: 1.5;
-    transition: border-color 0.1s, color 0.1s, background 0.1s;
-  }
-  .opt:hover { border-color: var(--border); color: var(--text); background: var(--bg); }
-  .opt.sel {
-    border-color: var(--text);
-    color: var(--text);
-    background: var(--bg);
-    font-weight: 500;
-  }
-  .multi-note { font-size: 11px; color: var(--text-ter); margin-top: 5px; }
-  textarea.ta {
-    width: 100%;
-    padding: 11px 14px;
-    border: 0.5px solid var(--border);
-    border-radius: var(--r);
-    background: var(--surface);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    color: var(--text);
-    resize: vertical;
-    min-height: 90px;
-    line-height: 1.6;
-    transition: border-color 0.15s;
-  }
-  textarea.ta:focus { outline: none; border-color: var(--text); }
-  textarea.ta::placeholder { color: var(--text-ter); }
-
-  /* Buttons */
-  .nav { display: flex; gap: 10px; margin-top: 2rem; flex-wrap: wrap; }
-  .btn {
-    padding: 10px 20px;
-    border-radius: var(--r);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    border: 0.5px solid var(--border);
-    background: var(--surface);
-    color: var(--text-sec);
-    transition: background 0.15s, color 0.15s;
-  }
-  .btn:hover { background: var(--bg); color: var(--text); }
-  .btn-p {
-    background: var(--accent);
-    color: var(--accent-fg);
-    border-color: var(--accent);
-  }
-  .btn-p:hover { opacity: 0.85; color: var(--accent-fg); }
-  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
-
-  .warn-text { font-size: 12px; color: var(--danger-text); margin-top: 8px; }
-
-  /* Divider */
-  hr.div { border: none; border-top: 0.5px solid var(--border); margin: 1.75rem 0; }
-
-  /* Review */
-  .rev-dim { margin-bottom: 1.5rem; }
-  .rev-dim-title {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--text-ter);
-    margin-bottom: 10px;
-  }
-  .rev-row {
-    display: flex;
-    gap: 12px;
-    padding: 8px 0;
-    border-bottom: 0.5px solid var(--border-light);
-    font-size: 13px;
-  }
-  .rev-row:last-child { border-bottom: none; }
-  .rev-q { color: var(--text-ter); flex: 0 0 36%; font-size: 12px; line-height: 1.5; }
-  .rev-a { color: var(--text); flex: 1; line-height: 1.5; }
-  .chip-wrap { display: flex; flex-wrap: wrap; gap: 4px; }
-  .chip {
-    font-size: 11px;
-    padding: 2px 9px;
-    border-radius: 999px;
-    background: var(--bg);
-    color: var(--text-sec);
-    border: 0.5px solid var(--border);
-  }
-
-  /* Loading */
-  .loading-wrap { padding: 3rem 0; display: flex; align-items: center; gap: 14px; }
-  .spinner {
-    width: 20px; height: 20px;
-    border: 1.5px solid var(--border);
-    border-top-color: var(--text-sec);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    flex-shrink: 0;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-text { font-size: 14px; color: var(--text-sec); }
-
-  /* Error */
-  .err-box {
-    background: var(--danger-bg);
-    border: 0.5px solid var(--danger-border);
-    border-radius: var(--r);
-    padding: 1rem 1.25rem;
-    font-size: 13px;
-    color: var(--danger-text);
-    line-height: 1.6;
-    white-space: pre-wrap;
-    word-break: break-word;
-    margin-top: 1rem;
-  }
-
-  /* Result sections */
-  .rb { margin-bottom: 2rem; }
-  .rb-label {
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-ter);
-    margin-bottom: 10px;
-  }
-  .restate-card {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--r-lg);
-    padding: 1.25rem;
-    font-size: 14px;
-    color: var(--text);
-    line-height: 1.7;
-  }
-  .constraint-card {
-    background: var(--danger-bg);
-    border: 0.5px solid var(--danger-border);
-    border-radius: var(--r-lg);
-    padding: 1.25rem;
-  }
-  .c-label {
-    font-family: 'DM Serif Display', serif;
-    font-size: 18px;
-    color: var(--danger-text);
-    margin-bottom: 8px;
-    line-height: 1.3;
-  }
-  .c-exp { font-size: 13px; color: #5C2018; line-height: 1.7; margin-bottom: 10px; }
-  .c-why {
-    font-size: 12px;
-    color: #7A2018;
-    line-height: 1.6;
-    padding-top: 10px;
-    border-top: 0.5px solid var(--danger-border);
-    font-style: italic;
-  }
-  .dp-grid { display: flex; flex-direction: column; gap: 8px; }
-  .dp-card {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--r);
-    padding: 12px 14px;
-  }
-  .dp-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-  .dp-name { font-size: 13px; font-weight: 500; color: var(--text); }
-  .maturity {
-    font-size: 11px;
-    padding: 2px 9px;
-    border-radius: 999px;
-    font-weight: 500;
-  }
-  .m-low { background: #FCEBEB; color: #791F1F; }
-  .m-developing { background: var(--warning-bg); color: var(--warning-text); }
-  .m-capable { background: #EAF3DE; color: #27500A; }
-  .m-advanced { background: var(--success-bg); color: var(--success-text); }
-  .dp-find { font-size: 12px; color: var(--text-sec); line-height: 1.6; }
-  .dp-wo {
-    font-size: 12px;
-    color: var(--warning-text);
-    line-height: 1.6;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 0.5px solid var(--border-light);
-  }
-  .steps-list { display: flex; flex-direction: column; gap: 10px; }
-  .step-card {
-    display: flex;
-    gap: 14px;
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--r);
-    padding: 12px 14px;
-  }
-  .step-num {
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    background: var(--bg);
-    border: 0.5px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 500;
-    color: var(--text-sec);
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-  .step-body { flex: 1; }
-  .step-act { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
-  .step-rat { font-size: 12px; color: var(--text-sec); line-height: 1.6; margin-bottom: 6px; }
-  .step-meta { display: flex; flex-wrap: wrap; gap: 12px; }
-  .step-tag { font-size: 11px; color: var(--text-ter); }
-  .gap-card {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--r-lg);
-    padding: 1.25rem;
-    font-size: 14px;
-    color: var(--text);
-    line-height: 1.7;
-  }
-  .q-list { display: flex; flex-direction: column; }
-  .q-item {
-    display: flex;
-    gap: 10px;
-    font-size: 13px;
-    color: var(--text);
-    line-height: 1.6;
-    padding: 10px 0;
-    border-bottom: 0.5px solid var(--border-light);
-  }
-  .q-item:last-child { border-bottom: none; }
-  .q-num { font-size: 12px; color: var(--text-ter); flex-shrink: 0; padding-top: 2px; }
-  .flags-list { display: flex; flex-direction: column; gap: 8px; }
-  .flag-item {
-    display: flex;
-    gap: 10px;
-    background: var(--danger-bg);
-    border: 0.5px solid var(--danger-border);
-    border-radius: var(--r);
-    padding: 10px 14px;
-    font-size: 13px;
-    color: var(--danger-text);
-    line-height: 1.6;
-  }
-  .flag-dot { flex-shrink: 0; margin-top: 4px; }
-  .assessor-card {
-    background: var(--surface);
-    border-left: 2px solid var(--border);
-    padding: 1.25rem 1.5rem;
-    font-size: 14px;
-    color: var(--text);
-    line-height: 1.8;
-    font-style: italic;
-    border-radius: 0 var(--r) var(--r) 0;
-  }
-  .model-credit {
-    font-size: 11px;
-    color: var(--text-ter);
-    text-align: right;
-    margin-top: 2rem;
-    padding-top: 1rem;
-    border-top: 0.5px solid var(--border-light);
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F5F0;--surface:#FFFFFF;--border:#E2DDD6;--border-light:#EDE9E3;
+  --text:#1A1714;--text-sec:#5C5650;--text-ter:#9B958E;
+  --accent:#1A1714;--accent-fg:#F7F5F0;
+  --danger-bg:#FDF0EE;--danger-border:#E8A99E;--danger-text:#7A2018;
+  --warn-bg:#FDF7EE;--warn-border:#E8C99E;--warn-text:#7A4A18;
+  --ok-bg:#F0F7F0;--ok-text:#1E5C2A;
+  --r:6px;--r-lg:10px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.page{max-width:680px;margin:0 auto;padding:3rem 1.5rem 6rem}
+.site-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:3rem;padding-bottom:1.5rem;border-bottom:0.5px solid var(--border)}
+.site-logo{font-family:'DM Serif Display',serif;font-size:18px;color:var(--text);letter-spacing:-0.02em}
+.site-tag{font-size:11px;color:var(--text-ter);letter-spacing:0.06em;text-transform:uppercase}
+.prog-wrap{margin-bottom:2rem}
+.prog-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--text-ter);margin-bottom:8px}
+.prog-bar{height:2px;background:var(--border);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:var(--text);border-radius:2px;transition:width 0.4s ease}
+.eyebrow{font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-ter);margin-bottom:8px}
+.stitle{font-family:'DM Serif Display',serif;font-size:26px;color:var(--text);margin-bottom:8px;line-height:1.25;letter-spacing:-0.02em}
+.sdesc{font-size:14px;color:var(--text-sec);margin-bottom:2rem;line-height:1.7;max-width:540px}
+.field{margin-bottom:1.25rem}
+.field label{display:block;font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px}
+.field input[type=text],.field input[type=password],.field input[type=email]{width:100%;padding:11px 14px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);transition:border-color .15s}
+.field input:focus{outline:none;border-color:var(--text)}
+.field-note{font-size:12px;color:var(--text-ter);margin-top:5px;line-height:1.5}
+.field-note a{color:var(--text-sec)}
+select.sel-input{width:100%;padding:11px 14px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239B958E' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+select.sel-input:focus{outline:none;border-color:var(--text)}
+.check-row{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text-sec);margin-top:10px}
+.check-row input{cursor:pointer;width:14px;height:14px;accent-color:var(--text)}
+.q-block{margin-bottom:1.5rem}
+.q-text{font-size:15px;font-weight:500;color:var(--text);margin-bottom:5px;line-height:1.5}
+.q-hint{font-size:12px;color:var(--text-ter);margin-bottom:10px;line-height:1.5;font-style:italic}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{text-align:left;padding:10px 14px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-sec);cursor:pointer;line-height:1.5;transition:border-color .1s,color .1s,background .1s}
+.opt:hover{border-color:var(--border);color:var(--text);background:var(--bg)}
+.opt.sel{border-color:var(--text);color:var(--text);background:var(--bg);font-weight:500}
+.multi-note{font-size:11px;color:var(--text-ter);margin-top:5px}
+textarea.ta{width:100%;padding:11px 14px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);resize:vertical;min-height:90px;line-height:1.6;transition:border-color .15s}
+textarea.ta:focus{outline:none;border-color:var(--text)}
+textarea.ta::placeholder{color:var(--text-ter)}
+.nav{display:flex;gap:10px;margin-top:2rem;flex-wrap:wrap}
+.btn{padding:10px 20px;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid var(--border);background:var(--surface);color:var(--text-sec);transition:background .15s,color .15s}
+.btn:hover{background:var(--bg);color:var(--text)}
+.btn-p{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.btn-p:hover{opacity:.85;color:var(--accent-fg)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+hr.div{border:none;border-top:0.5px solid var(--border);margin:1.75rem 0}
+.warn-text{font-size:12px;color:var(--danger-text);margin-top:8px}
+.rev-dim{margin-bottom:1.5rem}
+.rev-dim-title{font-size:11px;font-weight:500;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-ter);margin-bottom:10px}
+.rev-row{display:flex;gap:12px;padding:8px 0;border-bottom:0.5px solid var(--border-light);font-size:13px}
+.rev-row:last-child{border-bottom:none}
+.rev-q{color:var(--text-ter);flex:0 0 36%;font-size:12px;line-height:1.5}
+.rev-a{color:var(--text);flex:1;line-height:1.5}
+.chip-wrap{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-size:11px;padding:2px 9px;border-radius:999px;background:var(--bg);color:var(--text-sec);border:0.5px solid var(--border)}
+.gen-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:1.5rem;margin-bottom:1.5rem}
+.gen-card-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:1rem}
+.provider-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem}
+.provider-btn{padding:10px 8px;border:0.5px solid var(--border);border-radius:var(--r);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text-sec);cursor:pointer;text-align:center;transition:border-color .1s,color .1s,background .1s}
+.provider-btn:hover{border-color:var(--border);color:var(--text);background:var(--bg)}
+.provider-btn.sel{border-color:var(--text);color:var(--text);background:var(--bg);font-weight:500}
+.loading-wrap{padding:3rem 0;display:flex;align-items:center;gap:14px}
+.spinner{width:20px;height:20px;border:1.5px solid var(--border);border-top-color:var(--text-sec);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:var(--text-sec)}
+.err-box{background:var(--danger-bg);border:0.5px solid var(--danger-border);border-radius:var(--r);padding:1rem 1.25rem;font-size:13px;color:var(--danger-text);line-height:1.6;white-space:pre-wrap;word-break:break-word;margin-top:1rem}
+.rb{margin-bottom:2rem}
+.rb-label{font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-ter);margin-bottom:10px}
+.restate-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;font-size:14px;color:var(--text);line-height:1.7}
+.constraint-card{background:var(--danger-bg);border:0.5px solid var(--danger-border);border-radius:var(--r-lg);padding:1.25rem}
+.c-label{font-family:'DM Serif Display',serif;font-size:18px;color:var(--danger-text);margin-bottom:8px;line-height:1.3}
+.c-exp{font-size:13px;color:#5C2018;line-height:1.7;margin-bottom:10px}
+.c-why{font-size:12px;color:#7A2018;line-height:1.6;padding-top:10px;border-top:0.5px solid var(--danger-border);font-style:italic}
+.dp-grid{display:flex;flex-direction:column;gap:8px}
+.dp-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:12px 14px}
+.dp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.dp-name{font-size:13px;font-weight:500;color:var(--text)}
+.maturity{font-size:11px;padding:2px 9px;border-radius:999px;font-weight:500}
+.m-low{background:#FCEBEB;color:#791F1F}
+.m-developing{background:var(--warn-bg);color:var(--warn-text)}
+.m-capable{background:#EAF3DE;color:#27500A}
+.m-advanced{background:var(--ok-bg);color:var(--ok-text)}
+.dp-find{font-size:12px;color:var(--text-sec);line-height:1.6}
+.dp-wo{font-size:12px;color:var(--warn-text);line-height:1.6;margin-top:8px;padding-top:8px;border-top:0.5px solid var(--border-light)}
+.steps-list{display:flex;flex-direction:column;gap:10px}
+.step-card{display:flex;gap:14px;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:12px 14px}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--bg);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--text-sec);flex-shrink:0;margin-top:1px}
+.step-body{flex:1}
+.step-act{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
+.step-rat{font-size:12px;color:var(--text-sec);line-height:1.6;margin-bottom:6px}
+.step-meta{display:flex;flex-wrap:wrap;gap:12px}
+.step-tag{font-size:11px;color:var(--text-ter)}
+.gap-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;font-size:14px;color:var(--text);line-height:1.7}
+.q-list{display:flex;flex-direction:column}
+.q-item{display:flex;gap:10px;font-size:13px;color:var(--text);line-height:1.6;padding:10px 0;border-bottom:0.5px solid var(--border-light)}
+.q-item:last-child{border-bottom:none}
+.q-num{font-size:12px;color:var(--text-ter);flex-shrink:0;padding-top:2px}
+.flags-list{display:flex;flex-direction:column;gap:8px}
+.flag-item{display:flex;gap:10px;background:var(--danger-bg);border:0.5px solid var(--danger-border);border-radius:var(--r);padding:10px 14px;font-size:13px;color:var(--danger-text);line-height:1.6}
+.assessor-card{background:var(--surface);border-left:2px solid var(--border);padding:1.25rem 1.5rem;font-size:14px;color:var(--text);line-height:1.8;font-style:italic;border-radius:0 var(--r) var(--r) 0}
+.model-credit{font-size:11px;color:var(--text-ter);text-align:right;margin-top:2rem;padding-top:1rem;border-top:0.5px solid var(--border-light)}
 </style>
 </head>
 <body>
 <div class="page">
   <header class="site-header">
-    <span class="site-logo">AI Readiness</span>
-    <span class="site-tag">Enterprise Assessment</span>
+    <span class="site-logo">Groundwork</span>
+    <span class="site-tag">AI Readiness Assessment</span>
   </header>
   <div id="app"></div>
 </div>
 
 <script>
+const PROVIDERS = {
+  groq: {
+    label: 'Groq',
+    url: 'https://api.groq.com/openai/v1/chat/completions',
+    models: [
+      {id:'llama-3.3-70b-versatile', label:'Llama 3.3 70B (recommended)'},
+      {id:'llama-3.1-8b-instant',    label:'Llama 3.1 8B (fast)'},
+      {id:'mixtral-8x7b-32768',      label:'Mixtral 8x7B'}
+    ],
+    keyPlaceholder: 'gsk_...',
+    keyNote: 'Free key at <a href="https://console.groq.com" target="_blank">console.groq.com</a>',
+    authHeader: key => `Bearer ${key}`,
+    buildBody: (model, sys, user) => JSON.stringify({
+      model, temperature: 0.3, max_tokens: 2048,
+      response_format: {type:'json_object'},
+      messages: [{role:'system',content:sys},{role:'user',content:user}]
+    })
+  },
+  openai: {
+    label: 'OpenAI',
+    url: 'https://api.openai.com/v1/chat/completions',
+    models: [
+      {id:'gpt-4o',      label:'GPT-4o (recommended)'},
+      {id:'gpt-4o-mini', label:'GPT-4o mini (fast)'},
+      {id:'o1-mini',     label:'o1-mini'}
+    ],
+    keyPlaceholder: 'sk-...',
+    keyNote: 'Get a key at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a>',
+    authHeader: key => `Bearer ${key}`,
+    buildBody: (model, sys, user) => JSON.stringify({
+      model, max_tokens: 2048,
+      response_format: {type:'json_object'},
+      messages: [{role:'system',content:sys},{role:'user',content:user}]
+    })
+  },
+  anthropic: {
+    label: 'Anthropic',
+    url: 'https://api.anthropic.com/v1/messages',
+    models: [
+      {id:'claude-sonnet-4-20250514', label:'Claude Sonnet 4 (recommended)'},
+      {id:'claude-haiku-4-5-20251001', label:'Claude Haiku 4.5 (fast)'}
+    ],
+    keyPlaceholder: 'sk-ant-...',
+    keyNote: 'Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>',
+    authHeader: key => key,
+    buildBody: (model, sys, user) => JSON.stringify({
+      model, max_tokens: 2048,
+      system: sys,
+      messages: [{role:'user',content:user}]
+    }),
+    extraHeaders: {'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}
+  }
+};
+
 const DIMS=[
-  {id:'d0',label:'Intent & Problem Framing',desc:'Before the diagnostic begins — what are you actually trying to solve? This question anchors every finding that follows.',questions:[
+  {id:'d0',label:'Intent & Problem Framing',desc:'Before the diagnostic begins — what are you actually trying to solve? This anchors every finding that follows.',questions:[
     {id:'q0a',text:'What specific problems are you trying to solve through AI transformation?',type:'textarea',hint:'Be specific. Name the operational problem, not a technology aspiration.'},
     {id:'q0b',text:'Who defined those problems — and how recently?',type:'single',options:['Business leaders named them, with evidence of cost or impact','Technology or transformation team proposed them, business has agreed','They emerged from a strategy process in the last 12 months',"They've been on the agenda for a while — origins are unclear","We're still in the process of defining them"]},
     {id:'q0c',text:"Are these existing problems you're solving with AI — or problems AI has surfaced?",type:'single',options:['Existing known problems — AI is the proposed solution','New problems AI has revealed — e.g. data gaps, process opacity','Both',"Honestly, we're not sure yet"]}
@@ -479,7 +216,7 @@ const DIMS=[
     {id:'q17',text:'Who in your organisation connects the AI agenda to actual business outcomes?',type:'single',options:['A named person or team with that explicit role','It happens informally — a few people carry that bridge','Nobody really — technology and business are separate conversations',"It's assumed the technology team will figure out the value"]}
   ]},
   {id:'d5',label:'Skills & Knowledge',desc:"Whether the organisation has the judgment to use AI well and catch it when it's wrong.",questions:[
-    {id:'q18',text:'If a vendor said their model was "97% accurate" — who could meaningfully evaluate that claim?',type:'single',options:['Several people — we have that capability internally',"One or two people, but they're not always in the room",'We\'d need to bring in external help',"Nobody — we'd probably take it at face value","We'd ask the vendor but wouldn't know if the answer was good"]},
+    {id:'q18',text:'If a vendor said their model was "97% accurate" — who could meaningfully evaluate that claim?',type:'single',options:['Several people — we have that capability internally',"One or two people, but they're not always in the room","We'd need to bring in external help","Nobody — we'd probably take it at face value","We'd ask the vendor but wouldn't know if the answer was good"]},
     {id:'q19',text:'Where would you place your organisation on the AI literacy / domain knowledge matrix?',type:'single',options:['Enthusiastic but naive — excited about AI, limited ability to evaluate it','Capable and critical — understands AI and has strong domain knowledge','Expert but AI-sceptical — deep domain expertise, low trust in AI','Disengaged — neither AI literacy nor domain engagement is strong','Divided — different parts of the organisation in different quadrants']},
     {id:'q20',text:'How does your organisation currently build AI knowledge — and is it working?',type:'single',options:['Formal training programmes — structured and tracked','Vendor-led learning — mostly through partnerships and pilots','Self-directed — individuals learning on their own time',"Not systematically — knowledge concentrated in a few people","We're not sure it's working regardless of method"]}
   ]},
@@ -501,10 +238,22 @@ Rules:
 - Sequence recommendations step 1, step 2, step 3 — never a flat list.
 - Connect all findings to the stated problem in Q0A.
 
-Return ONLY valid JSON with no markdown, no backticks, no preamble. Structure:
-{"problem_restatement":"2 sentences restating Q0A precisely, surfacing ambiguity if present","primary_constraint":{"label":"short name","explanation":"2-3 sentences grounded in specific answers, naming which questions revealed this","why_this_first":"1 sentence on why resolving this unlocks everything else"},"dimension_profiles":[{"dimension":"name","maturity":"low|developing|capable|advanced","key_finding":"1-2 sentences specific to their answers","watch_out":"specific risk or null"}],"recommended_sequence":[{"step":1,"action":"specific action not a category","rationale":"why this first grounded in their answers","timeframe":"realistic timeframe","success_looks_like":"what they would see if this worked"}],"problem_readiness_gap":"2 sentences honest gap assessment","questions_they_should_be_asking":["3-5 questions grounded in their specific answers"],"red_flags":["explicit blockers traceable to specific answers — empty array if none"],"assessor_note":"2 sentences candid summary — what you would say with complete candour to this leadership team"}`;
+Return ONLY valid JSON with no markdown, no backticks, no preamble:
+{"problem_restatement":"2 sentences restating Q0A precisely, surfacing ambiguity if present","primary_constraint":{"label":"short name","explanation":"2-3 sentences grounded in specific answers, naming which questions revealed this","why_this_first":"1 sentence on why resolving this unlocks everything else"},"dimension_profiles":[{"dimension":"name","maturity":"low|developing|capable|advanced","key_finding":"1-2 sentences specific to their answers","watch_out":"specific risk or null"}],"recommended_sequence":[{"step":1,"action":"specific action not a category","rationale":"why this first grounded in their answers","timeframe":"realistic timeframe","success_looks_like":"what they would see if this worked"}],"problem_readiness_gap":"2 sentences honest gap assessment","questions_they_should_be_asking":["3-5 questions grounded in their specific answers"],"red_flags":["explicit blockers traceable to specific answers — empty array if none"],"assessor_note":"2 sentences candid summary"}`;
 
-let S={screen:'welcome',dimIdx:0,orgName:'',apiKey:'',answers:{},result:null,error:''};
+// Load saved preferences
+const savedProvider = localStorage.getItem('gw_provider') || 'groq';
+const savedModel    = localStorage.getItem('gw_model')    || 'llama-3.3-70b-versatile';
+const savedKey      = localStorage.getItem('gw_key')      || '';
+const savedRemember = localStorage.getItem('gw_remember') === 'true';
+
+let S={
+  screen:'welcome', dimIdx:0, orgName:'', answers:{}, result:null, error:'',
+  provider: savedProvider,
+  model: savedModel,
+  apiKey: savedKey,
+  remember: savedRemember
+};
 
 function root(){return document.getElementById('app')}
 function $id(id){return document.getElementById(id)}
@@ -512,8 +261,8 @@ function $id(id){return document.getElementById(id)}
 function answered(q,ans){
   const v=ans[q.id];
   if(q.type==='textarea') return v&&v.trim().length>0;
-  if(q.type==='single') return v!==undefined&&v!==null&&v!=='';
-  if(q.type==='multi') return Array.isArray(v)&&v.length>0;
+  if(q.type==='single')   return v!==undefined&&v!==null&&v!=='';
+  if(q.type==='multi')    return Array.isArray(v)&&v.length>0;
   return false;
 }
 function dimOk(dim){return dim.questions.every(q=>answered(q,S.answers))}
@@ -533,293 +282,364 @@ function buildMsg(){
 
 function mc(m){
   const v=(m||'').toLowerCase();
-  if(v==='low') return 'm-low';
-  if(v==='developing') return 'm-developing';
-  if(v==='capable') return 'm-capable';
-  if(v==='advanced') return 'm-advanced';
+  if(v==='low')       return 'm-low';
+  if(v==='developing')return 'm-developing';
+  if(v==='capable')   return 'm-capable';
+  if(v==='advanced')  return 'm-advanced';
   return 'm-developing';
 }
 
 function render(){
   const s=S.screen;
   if(s==='welcome') rWelcome();
-  else if(s==='dim') rDim();
-  else if(s==='review') rReview();
+  else if(s==='dim')     rDim();
+  else if(s==='review')  rReview();
+  else if(s==='generate')rGenerate();
   else if(s==='loading') rLoading();
-  else if(s==='result') rResult();
+  else if(s==='result')  rResult();
 }
 
+/* ── WELCOME ── */
 function rWelcome(){
   root().innerHTML=`
-    <div class="screen-eyebrow">Enterprise Assessment Tool</div>
-    <div class="screen-title">AI Readiness<br>Assessment</div>
-    <div class="screen-desc">A structured diagnostic across seven dimensions — intent, data, process, governance, organisational readiness, skills, and capacity. Produces an AI-generated readiness profile specific to your organisation.</div>
+    <div class="eyebrow">Enterprise Assessment Tool</div>
+    <div class="stitle">AI Readiness<br>Assessment</div>
+    <div class="sdesc">A structured diagnostic across seven dimensions — intent, data, process, governance, organisational readiness, skills, and capacity. Takes 25–30 minutes and produces an AI-generated readiness profile.</div>
     <hr class="div">
     <div class="field">
       <label for="oi">Organisation name</label>
-      <input id="oi" type="text" placeholder="e.g. MidlandFirst Bank" value="${S.orgName}" oninput="S.orgName=this.value;checkW()">
-    </div>
-    <div class="field">
-      <label for="ki">Groq API key</label>
-      <input id="ki" type="password" placeholder="gsk_..." value="${S.apiKey}" oninput="S.apiKey=this.value;checkW()">
-      <div class="field-note">Used only to call the Groq API. Never stored. Get a free key at <a href="https://console.groq.com" target="_blank">console.groq.com</a> — model: llama-3.3-70b-versatile.</div>
+      <input id="oi" type="text" placeholder="e.g. MidlandFirst Bank" value="${esc(S.orgName)}" oninput="S.orgName=this.value;checkW()">
     </div>
     <div class="nav">
-      <button class="btn btn-p" id="sb" onclick="goStart()" ${S.orgName.trim()&&S.apiKey.trim()?'':'disabled'}>Begin assessment →</button>
+      <button class="btn btn-p" id="sb" onclick="goStart()" ${S.orgName.trim()?'':'disabled'}>Begin assessment →</button>
     </div>
-    <div style="margin-top:1.5rem;font-size:12px;color:var(--text-ter)">30 questions · 8 dimensions · ~25 minutes · Synthesised by Groq</div>
+    <div style="margin-top:1.5rem;font-size:12px;color:var(--text-ter)">30 questions · 8 dimensions · ~25 minutes · AI key required at submission</div>
   `;
 }
+function checkW(){const b=$id('sb');if(b)b.disabled=!S.orgName.trim()}
+function goStart(){S.screen='dim';S.dimIdx=0;render();scrollTo(0,0)}
 
-function checkW(){
-  const b=$id('sb');
-  if(b) b.disabled=!(S.orgName.trim()&&S.apiKey.trim());
-}
-
-function goStart(){S.screen='dim';S.dimIdx=0;render();window.scrollTo(0,0)}
-
+/* ── DIMENSION ── */
 function rDim(){
   const dim=DIMS[S.dimIdx];
   const pct=Math.round((S.dimIdx/DIMS.length)*100);
   const ok=dimOk(dim);
-
   const qs=dim.questions.map(q=>{
     const v=S.answers[q.id];
     let inp='';
     if(q.type==='single'){
-      inp=`<div class="opts">${q.options.map((o,i)=>`<button class="opt${v===o?' sel':''}" onclick="pickS('${q.id}',${i})">${o}</button>`).join('')}</div>`;
+      inp=`<div class="opts">${q.options.map((o,i)=>`<button class="opt${v===o?' sel':''}" onclick="pickS('${q.id}',${i})">${esc(o)}</button>`).join('')}</div>`;
     } else if(q.type==='multi'){
       const sel=Array.isArray(v)?v:[];
-      inp=`<div class="opts">${q.options.map((o,i)=>`<button class="opt${sel.includes(o)?' sel':''}" onclick="pickM('${q.id}',${i})">${o}</button>`).join('')}</div><div class="multi-note">Select all that apply</div>`;
+      inp=`<div class="opts">${q.options.map((o,i)=>`<button class="opt${sel.includes(o)?' sel':''}" onclick="pickM('${q.id}',${i})">${esc(o)}</button>`).join('')}</div><div class="multi-note">Select all that apply</div>`;
     } else {
-      inp=`<textarea class="ta" id="ta-${q.id}" oninput="setTA('${q.id}',this.value)" placeholder="Type your answer...">${v||''}</textarea>`;
+      inp=`<textarea class="ta" id="ta-${q.id}" oninput="setTA('${q.id}',this.value)" placeholder="Type your answer...">${esc(v||'')}</textarea>`;
     }
     return `<div class="q-block"><div class="q-text">${q.text}</div>${q.hint?`<div class="q-hint">${q.hint}</div>`:''}${inp}</div>`;
   }).join('');
-
   root().innerHTML=`
     <div class="prog-wrap">
       <div class="prog-meta"><span>${dim.label}</span><span>${S.dimIdx+1} of ${DIMS.length}</span></div>
       <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
     </div>
-    <div class="screen-eyebrow">Dimension ${S.dimIdx+1}</div>
-    <div class="screen-title" style="font-size:22px;margin-bottom:6px">${dim.label}</div>
-    <div class="screen-desc">${dim.desc}</div>
+    <div class="eyebrow">Dimension ${S.dimIdx+1}</div>
+    <div class="stitle" style="font-size:22px;margin-bottom:6px">${dim.label}</div>
+    <div class="sdesc">${dim.desc}</div>
     ${qs}
     ${!ok?`<div class="warn-text">Answer all questions to continue</div>`:''}
     <div class="nav">
       <button class="btn" onclick="goBack()">← Back</button>
-      <button class="btn btn-p" id="nb" onclick="goNext()" ${ok?'':'disabled'}>${S.dimIdx<DIMS.length-1?'Next dimension →':'Review answers →'}</button>
+      <button class="btn btn-p" id="nb" onclick="goNext()" ${ok?'':'disabled'}>${S.dimIdx<DIMS.length-1?'Next →':'Review answers →'}</button>
     </div>
   `;
 }
-
-function pickS(qId,oi){
-  const dim=DIMS[S.dimIdx];
-  S.answers[qId]=dim.questions.find(x=>x.id===qId).options[oi];
-  rDim();
-}
+function pickS(qId,oi){S.answers[qId]=DIMS[S.dimIdx].questions.find(x=>x.id===qId).options[oi];rDim()}
 function pickM(qId,oi){
-  const dim=DIMS[S.dimIdx];
-  const opt=dim.questions.find(x=>x.id===qId).options[oi];
-  if(!S.answers[qId]) S.answers[qId]=[];
+  const opt=DIMS[S.dimIdx].questions.find(x=>x.id===qId).options[oi];
+  if(!S.answers[qId])S.answers[qId]=[];
   const idx=S.answers[qId].indexOf(opt);
-  if(idx>=0) S.answers[qId].splice(idx,1);
-  else S.answers[qId].push(opt);
+  if(idx>=0)S.answers[qId].splice(idx,1);else S.answers[qId].push(opt);
   rDim();
 }
 function setTA(qId,val){
   S.answers[qId]=val;
   const ok=dimOk(DIMS[S.dimIdx]);
-  const nb=$id('nb');if(nb) nb.disabled=!ok;
-  const w=root().querySelector('.warn-text');if(w) w.style.display=ok?'none':'block';
+  const nb=$id('nb');if(nb)nb.disabled=!ok;
+  const w=root().querySelector('.warn-text');if(w)w.style.display=ok?'none':'block';
 }
-
 function goNext(){
-  if(!dimOk(DIMS[S.dimIdx])) return;
-  if(S.dimIdx<DIMS.length-1){S.dimIdx++;render();window.scrollTo(0,0);}
-  else{S.screen='review';render();window.scrollTo(0,0);}
+  if(!dimOk(DIMS[S.dimIdx]))return;
+  if(S.dimIdx<DIMS.length-1){S.dimIdx++;render();scrollTo(0,0);}
+  else{S.screen='review';render();scrollTo(0,0);}
 }
 function goBack(){
-  if(S.screen==='review'){S.screen='dim';S.dimIdx=DIMS.length-1;}
-  else if(S.screen==='result'){S.screen='review';}
-  else if(S.dimIdx>0){S.dimIdx--;}
-  else{S.screen='welcome';}
-  render();window.scrollTo(0,0);
+  if(S.screen==='review')    {S.screen='dim';S.dimIdx=DIMS.length-1;}
+  else if(S.screen==='generate'){S.screen='review';}
+  else if(S.screen==='result') {S.screen='generate';}
+  else if(S.dimIdx>0)          {S.dimIdx--;}
+  else                          {S.screen='welcome';}
+  render();scrollTo(0,0);
 }
 
+/* ── REVIEW ── */
 function rReview(){
   const rows=DIMS.map(dim=>{
     const qs=dim.questions.map(q=>{
       const v=S.answers[q.id];
       const disp=Array.isArray(v)
-        ?`<div class="chip-wrap">${v.map(x=>`<span class="chip">${x}</span>`).join('')}</div>`
-        :`<span>${v||'—'}</span>`;
+        ?`<div class="chip-wrap">${v.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>`
+        :`<span>${esc(v||'—')}</span>`;
       return `<div class="rev-row"><div class="rev-q">${q.id.toUpperCase()}</div><div class="rev-a">${disp}</div></div>`;
     }).join('');
     return `<div class="rev-dim"><div class="rev-dim-title">${dim.label}</div>${qs}</div>`;
   }).join('<hr class="div">');
-
   root().innerHTML=`
     <div class="prog-wrap">
-      <div class="prog-meta"><span>Review</span><span>Complete</span></div>
+      <div class="prog-meta"><span>Review</span><span>All complete</span></div>
       <div class="prog-bar"><div class="prog-fill" style="width:100%"></div></div>
     </div>
-    <div class="screen-title" style="font-size:22px;margin-bottom:6px">Review — ${S.orgName}</div>
-    <div class="screen-desc">Check your answers below. When ready, generate the readiness profile — Groq will synthesise the results in around 15 seconds.</div>
+    <div class="stitle" style="font-size:22px;margin-bottom:6px">Review — ${esc(S.orgName)}</div>
+    <div class="sdesc">Check your answers below, then proceed to generate the readiness profile.</div>
     <hr class="div" style="margin-top:0">
     ${rows}
     <div class="nav" style="margin-top:2rem">
       <button class="btn" onclick="goBack()">← Edit answers</button>
-      <button class="btn btn-p" onclick="runSynthesis()">Generate readiness profile →</button>
+      <button class="btn btn-p" onclick="S.screen='generate';render();scrollTo(0,0)">Choose model & generate →</button>
     </div>
-    <div id="err-area"></div>
   `;
 }
 
+/* ── GENERATE (model + key selection) ── */
+function rGenerate(){
+  const prov=PROVIDERS[S.provider];
+  const modelOpts=prov.models.map(m=>`<option value="${m.id}" ${S.model===m.id?'selected':''}>${m.label}</option>`).join('');
+  const provBtns=Object.entries(PROVIDERS).map(([k,p])=>
+    `<button class="provider-btn${S.provider===k?' sel':''}" onclick="setProvider('${k}')">${p.label}</button>`
+  ).join('');
+  const hasKey=!!S.apiKey.trim();
+  root().innerHTML=`
+    <div class="prog-wrap">
+      <div class="prog-meta"><span>Generate</span><span>Final step</span></div>
+      <div class="prog-bar"><div class="prog-fill" style="width:100%"></div></div>
+    </div>
+    <div class="stitle" style="font-size:22px;margin-bottom:6px">Generate Profile</div>
+    <div class="sdesc">Choose your AI provider and model, enter your API key, then generate the readiness profile for <strong>${esc(S.orgName)}</strong>.</div>
+
+    <div class="gen-card">
+      <div class="gen-card-title">Provider</div>
+      <div class="provider-grid">${provBtns}</div>
+      <div class="field" style="margin-bottom:0.75rem">
+        <label>Model</label>
+        <select class="sel-input" id="model-sel" onchange="S.model=this.value">${modelOpts}</select>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label for="ki">API key</label>
+        <input id="ki" type="password" placeholder="${esc(prov.keyPlaceholder)}" value="${esc(S.apiKey)}" oninput="S.apiKey=this.value;checkG()">
+        <div class="field-note">${prov.keyNote}</div>
+      </div>
+      <label class="check-row">
+        <input type="checkbox" id="rem-chk" ${S.remember?'checked':''} onchange="S.remember=this.checked">
+        Remember key on this device
+      </label>
+    </div>
+
+    <div id="gen-err"></div>
+    <div class="nav">
+      <button class="btn" onclick="goBack()">← Back to review</button>
+      <button class="btn btn-p" id="gen-btn" onclick="runSynthesis()" ${hasKey?'':'disabled'}>Generate readiness profile →</button>
+    </div>
+  `;
+}
+function setProvider(key){
+  S.provider=key;
+  S.model=PROVIDERS[key].models[0].id;
+  rGenerate();
+}
+function checkG(){
+  const b=$id('gen-btn');
+  if(b)b.disabled=!S.apiKey.trim();
+}
+
+/* ── LOADING ── */
 function rLoading(){
   root().innerHTML=`
     <div class="prog-wrap">
-      <div class="prog-meta"><span>Synthesising</span><span>via Groq</span></div>
+      <div class="prog-meta"><span>Synthesising</span><span>${PROVIDERS[S.provider].label} · ${S.model}</span></div>
       <div class="prog-bar"><div class="prog-fill" style="width:100%"></div></div>
     </div>
     <div class="loading-wrap">
       <div class="spinner"></div>
-      <div class="loading-text" id="lt">Sending to Groq...</div>
+      <div class="loading-text" id="lt">Sending to ${PROVIDERS[S.provider].label}...</div>
     </div>
   `;
-  const msgs=['Sending to Groq...','Identifying primary constraint...','Profiling dimensions...','Sequencing recommendations...','Almost ready...'];
+  const msgs=[`Sending to ${PROVIDERS[S.provider].label}...`,'Identifying primary constraint...','Profiling dimensions...','Sequencing recommendations...','Almost ready...'];
   let mi=0;
   window._ticker=setInterval(()=>{mi=(mi+1)%msgs.length;const e=$id('lt');if(e)e.textContent=msgs[mi];},2200);
 }
 
+/* ── API CALL ── */
 async function runSynthesis(){
+  if(S.remember){
+    localStorage.setItem('gw_provider',S.provider);
+    localStorage.setItem('gw_model',S.model);
+    localStorage.setItem('gw_key',S.apiKey);
+    localStorage.setItem('gw_remember','true');
+  } else {
+    localStorage.removeItem('gw_provider');
+    localStorage.removeItem('gw_model');
+    localStorage.removeItem('gw_key');
+    localStorage.setItem('gw_remember','false');
+  }
+
   S.screen='loading';render();clearInterval(window._ticker);
+  const prov=PROVIDERS[S.provider];
+
   try{
-    const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+    const headers={'Content-Type':'application/json'};
+    if(S.provider==='anthropic'){
+      headers['x-api-key']=S.apiKey;
+      Object.assign(headers,prov.extraHeaders||{});
+    } else {
+      headers['Authorization']=prov.authHeader(S.apiKey);
+    }
+
+    const res=await fetch(prov.url,{
       method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${S.apiKey}`},
-      body:JSON.stringify({
-        model:'llama-3.3-70b-versatile',
-        messages:[{role:'system',content:SYNTH_SYS},{role:'user',content:buildMsg()}],
-        temperature:0.3,
-        max_tokens:2048,
-        response_format:{type:'json_object'}
-      })
+      headers,
+      body:prov.buildBody(S.model,SYNTH_SYS,buildMsg())
     });
     clearInterval(window._ticker);
+
     if(!res.ok){
       let detail='';
       try{const d=await res.json();detail=JSON.stringify(d.error||d);}catch(e){detail=`HTTP ${res.status}`;}
-      if(res.status===401) throw new Error('Invalid Groq API key. Check your key at console.groq.com and re-enter it on the welcome screen.');
-      if(res.status===429) throw new Error('Rate limit reached. Wait a moment and try again.');
-      throw new Error(`Groq API error ${res.status}: ${detail}`);
+      if(res.status===401)throw new Error('Invalid API key. Check your key and try again.');
+      if(res.status===429)throw new Error('Rate limit reached. Wait a moment and try again.');
+      throw new Error(`API error ${res.status}: ${detail}`);
     }
+
     const data=await res.json();
-    const raw=data.choices?.[0]?.message?.content||'';
+    let raw='';
+    if(S.provider==='anthropic'){
+      raw=(data.content||[]).map(b=>b.text||'').join('');
+    } else {
+      raw=data.choices?.[0]?.message?.content||'';
+    }
+
     let parsed;
     try{
       const clean=raw.replace(/^```(?:json)?|```$/gm,'').trim();
       parsed=JSON.parse(clean);
-    }catch(e){throw new Error(`Could not parse Groq response as JSON.\n\nRaw output:\n${raw.slice(0,500)}`);}
-    S.result=parsed;S.error='';S.screen='result';render();window.scrollTo(0,0);
+    }catch(e){
+      throw new Error(`Could not parse response as JSON.\n\nRaw output:\n${raw.slice(0,500)}`);
+    }
+
+    S.result=parsed;S.error='';S.screen='result';render();scrollTo(0,0);
+
   }catch(err){
     clearInterval(window._ticker);
-    S.error=err.message;S.screen='review';render();
-    const ea=$id('err-area');
+    S.error=err.message;S.screen='generate';render();
+    const ea=$id('gen-err');
     if(ea){const d=document.createElement('div');d.className='err-box';d.textContent=err.message;ea.appendChild(d);}
   }
 }
 
+/* ── RESULT ── */
 function rResult(){
   const d=S.result;
-  if(!d){S.screen='review';render();return;}
+  if(!d){S.screen='generate';render();return;}
 
   const dimHTML=(d.dimension_profiles||[]).map(p=>{
     const wo=p.watch_out&&p.watch_out!=='null'&&p.watch_out!==null
-      ?`<div class="dp-wo">⚠ ${p.watch_out}</div>`:'';
-    return `<div class="dp-card"><div class="dp-head"><span class="dp-name">${p.dimension}</span><span class="maturity ${mc(p.maturity)}">${p.maturity}</span></div><div class="dp-find">${p.key_finding}</div>${wo}</div>`;
+      ?`<div class="dp-wo">⚠ ${esc(p.watch_out)}</div>`:'';
+    return `<div class="dp-card"><div class="dp-head"><span class="dp-name">${esc(p.dimension)}</span><span class="maturity ${mc(p.maturity)}">${esc(p.maturity)}</span></div><div class="dp-find">${esc(p.key_finding)}</div>${wo}</div>`;
   }).join('');
 
   const stepsHTML=(d.recommended_sequence||[]).map(s=>`
     <div class="step-card">
       <div class="step-num">${s.step}</div>
       <div class="step-body">
-        <div class="step-act">${s.action}</div>
-        <div class="step-rat">${s.rationale}</div>
+        <div class="step-act">${esc(s.action)}</div>
+        <div class="step-rat">${esc(s.rationale)}</div>
         <div class="step-meta">
-          <span class="step-tag">⏱ ${s.timeframe}</span>
-          ${s.success_looks_like?`<span class="step-tag">✓ ${s.success_looks_like}</span>`:''}
+          <span class="step-tag">⏱ ${esc(s.timeframe)}</span>
+          ${s.success_looks_like?`<span class="step-tag">✓ ${esc(s.success_looks_like)}</span>`:''}
         </div>
       </div>
     </div>`).join('');
 
-  const qHTML=(d.questions_they_should_be_asking||[]).map((q,i)=>`<div class="q-item"><span class="q-num">${i+1}.</span><span>${q}</span></div>`).join('');
+  const qHTML=(d.questions_they_should_be_asking||[]).map((q,i)=>`<div class="q-item"><span class="q-num">${i+1}.</span><span>${esc(q)}</span></div>`).join('');
 
   const flags=d.red_flags||[];
   const flagHTML=flags.length?`
     <div class="rb">
       <div class="rb-label">Red flags</div>
-      <div class="flags-list">${flags.map(f=>`<div class="flag-item"><span class="flag-dot">⚑</span><span>${f}</span></div>`).join('')}</div>
+      <div class="flags-list">${flags.map(f=>`<div class="flag-item"><span style="flex-shrink:0;margin-top:2px">⚑</span><span>${esc(f)}</span></div>`).join('')}</div>
     </div>`:'';
+
+  const modelLabel=PROVIDERS[S.provider]?.models.find(m=>m.id===S.model)?.label||S.model;
 
   root().innerHTML=`
     <div class="prog-wrap">
-      <div class="prog-meta"><span>Readiness Profile</span><span>${S.orgName}</span></div>
+      <div class="prog-meta"><span>Readiness Profile</span><span>${esc(S.orgName)}</span></div>
       <div class="prog-bar"><div class="prog-fill" style="width:100%"></div></div>
     </div>
-
-    <div class="screen-title" style="font-size:22px;margin-bottom:0.25rem">Readiness Profile</div>
-    <div style="font-size:14px;color:var(--text-ter);margin-bottom:2rem">${S.orgName}</div>
+    <div class="stitle" style="font-size:22px;margin-bottom:4px">Readiness Profile</div>
+    <div style="font-size:14px;color:var(--text-ter);margin-bottom:2rem">${esc(S.orgName)}</div>
 
     <div class="rb">
       <div class="rb-label">Problem restatement</div>
-      <div class="restate-card">${d.problem_restatement||''}</div>
+      <div class="restate-card">${esc(d.problem_restatement||'')}</div>
     </div>
-
     <div class="rb">
       <div class="rb-label">Primary constraint</div>
       <div class="constraint-card">
-        <div class="c-label">${d.primary_constraint?.label||''}</div>
-        <div class="c-exp">${d.primary_constraint?.explanation||''}</div>
-        <div class="c-why">${d.primary_constraint?.why_this_first||''}</div>
+        <div class="c-label">${esc(d.primary_constraint?.label||'')}</div>
+        <div class="c-exp">${esc(d.primary_constraint?.explanation||'')}</div>
+        <div class="c-why">${esc(d.primary_constraint?.why_this_first||'')}</div>
       </div>
     </div>
-
     <div class="rb">
       <div class="rb-label">Dimension profiles</div>
       <div class="dp-grid">${dimHTML}</div>
     </div>
-
     <div class="rb">
       <div class="rb-label">Recommended sequence</div>
       <div class="steps-list">${stepsHTML}</div>
     </div>
-
     <div class="rb">
       <div class="rb-label">Problem-readiness gap</div>
-      <div class="gap-card">${d.problem_readiness_gap||''}</div>
+      <div class="gap-card">${esc(d.problem_readiness_gap||'')}</div>
     </div>
-
     <div class="rb">
       <div class="rb-label">Questions they should be asking</div>
       <div class="q-list">${qHTML}</div>
     </div>
-
     ${flagHTML}
-
     <div class="rb">
       <div class="rb-label">Assessor's note</div>
-      <div class="assessor-card">${d.assessor_note||''}</div>
+      <div class="assessor-card">${esc(d.assessor_note||'')}</div>
     </div>
-
-    <div class="model-credit">Generated by llama-3.3-70b-versatile via Groq</div>
-
+    <div class="model-credit">Generated by ${esc(modelLabel)} · ${PROVIDERS[S.provider].label}</div>
     <div class="nav">
-      <button class="btn" onclick="goBack()">← Back to review</button>
-      <button class="btn" onclick="S={screen:'welcome',dimIdx:0,orgName:'',apiKey:S.apiKey,answers:{},result:null,error:''};render()">New assessment</button>
+      <button class="btn" onclick="goBack()">← Back</button>
+      <button class="btn" onclick="resetTool()">New assessment</button>
     </div>
   `;
+}
+
+function resetTool(){
+  S={...S,screen:'welcome',dimIdx:0,orgName:'',answers:{},result:null,error:''};
+  render();scrollTo(0,0);
+}
+
+function esc(str){
+  if(!str&&str!==0)return'';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
 }
 
 render();
